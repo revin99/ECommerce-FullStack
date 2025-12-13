@@ -1,5 +1,6 @@
 package com.ecommerce.project.security.jwt;
 
+import com.ecommerce.project.security.services.UserDetailsImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
+import java.util.Date;
 
 @Component
 public class JwtUtils {
@@ -24,7 +26,7 @@ public class JwtUtils {
     @Value("${spring.app.jwtSecret}")
     private String jwtSecret;
 
-    @Value("${spring.app.jwtExpirationMs")
+    @Value("${spring.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
     public String getJwtFromHeader(HttpServletRequest request){
@@ -34,6 +36,16 @@ public class JwtUtils {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    public String generateTokenFromUsername(UserDetailsImpl userDetails){
+        String username = userDetails.getUsername();
+        return Jwts.builder()
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date((new Date().getTime()+jwtExpirationMs)))
+                .signWith(key())
+                .compact();
     }
 
     public String getUserNameFromJwtToken(String token){
