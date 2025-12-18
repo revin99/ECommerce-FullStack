@@ -25,5 +25,6 @@ public class OrderDTO {
     private Payment payment;
     private Double totalAmount;
     private String orderStatus;
-    private Address address;
+    private Long address;
+
 }
